@@ -2,7 +2,7 @@ public class aliceANDbob {
 
     /*
     100% winning
-    alice choose oposite from what she's getting
+    alice choose opposite from what she's getting
     bob choose what he is getting
      */
 
