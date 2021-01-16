@@ -30,6 +30,7 @@ public class parkingProblem {
     }
 
     /*
+
     this function will return the number of car in the loop
     it will start at the head of the linked list of cars, the head will be marked with char V
     then we will iterate through the list, if we see car with mark V we mark it with W
