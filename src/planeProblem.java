@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class planeProblem {
@@ -160,23 +162,34 @@ public class planeProblem {
      */
     public static void print_all_paths(List<String> path, int upIndex, int rightIndex) { //the best paths
 
-        while (upIndex > 0 && rightIndex > 0) { //didnt get to the left border of the greed or to the down border
+        if (upIndex > 0 && rightIndex > 0) { //didnt get to the left border of the greed or to the down border
             int from_right = greed[upIndex][rightIndex - 1].getWeight_for_x() + greed[upIndex][rightIndex - 1].getWeight_of_this_node();
             int from_up = greed[upIndex - 1][rightIndex].getWeight_for_y() + greed[upIndex - 1][rightIndex].getWeight_of_this_node();
             if (from_right < from_up) {//means the low path go from the node that is on the left from the main node(we need to go right)
                 path.add(0, "R");
                 print_all_paths(path, upIndex, rightIndex - 1);
-            } else { //they could be equals as well, so i choose to go down in this case
+            } else if (from_right > from_up){ //they could be equals as well, so i choose to go down in this case
                 path.add(0, "U");
                 print_all_paths(path, upIndex - 1, rightIndex);
+            }
+            else{ //from_right == from_up
+                List<String> path1 = new ArrayList<>();
+                Collections.copy(path, path1);
+                path1.add(0, "U");
+                print_all_paths(path1, upIndex - 1, rightIndex);
 
+
+                List<String> path2 = new ArrayList<>();
+                Collections.copy(path, path2);
+                path2.add(0, "R");
+                print_all_paths(path2, upIndex, rightIndex - 1);
             }
         }
-        while (upIndex > 0) { //rightIndex ==0 means that we get to the left border of the greed
+        if (upIndex > 0 && rightIndex == 0) { //rightIndex ==0 means that we get to the left border of the greed
             path.add(0, "U");
             print_all_paths(path, upIndex - 1, rightIndex);
         }
-        while (rightIndex > 0) { // upIndex ==0 means that we get to the button of the greed
+        if (rightIndex > 0 && upIndex==0) { // upIndex ==0 means that we get to the button of the greed
             path.add(0, "R");
             print_all_paths(path, upIndex, rightIndex - 1);
         }
@@ -386,17 +399,19 @@ public class planeProblem {
         update_the_path_weights(); //build the greed with weights
         numbers_of_low_paths();
 //        System.out.println(greed[m-1][n-1].getNum_of_low_path());
-        System.out.println(greed[m-1][n-1].getWeight_of_this_node());
-        List<String> as = print_one_path();
-        print_list(as);
+        //System.out.println(greed[m-1][n-1].getWeight_of_this_node());
+//        List<String> as = print_one_path();
+//        print_list(as);
 //        as.clear();
-//        print_all_paths_iterative();
-//        System.out.println(greed[m-1][n-1].getPaths_to_this_node().size());
-//        for (int i=0; i<5; i++){
-//            print_list(greed[m-1][n-1].getPaths_to_this_node().get(i));
-//        }
+        //print_all_paths_iterative();
+        List<String> as = new ArrayList<>();
+        print_all_paths(as, m-1, n-1);
+        System.out.println(allPaths.size());
+        for (int i=0; i<5; i++){
+            print_list(allPaths.get(i));
+        }
 
-        System.out.println(is_node_in_path(0,1));
+
     }
 
 }
