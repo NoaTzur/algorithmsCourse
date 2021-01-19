@@ -85,11 +85,23 @@ public class theNumberGame {
 
     }
 
+    public static void printingGreeds(int[][] greed){
+
+        for (int rows=0; rows<greed.length; rows ++){
+            for (int cols=0; cols<greed[0].length; cols++){
+                System.out.print(greed[rows][cols] + "  ");
+            }
+            System.out.println();
+
+        }
+    }
+
     public static void main(String[] args) {
         int[] arr = {1,3,6,1,3,6};
         int[][] mat = fillTheMat(arr);
 
         dynamicGame(arr, mat);
+        printingGreeds(mat);
     }
 
 }

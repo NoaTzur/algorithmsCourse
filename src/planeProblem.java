@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class planeProblem {
@@ -8,14 +6,15 @@ public class planeProblem {
     static node[][] greed;
     static int right; //cols
     static int up; // rows
-    static List<List<String>> allPaths;
+    static List<String> allPaths;
+    static int count = 0;
 
     public static class node {
         private int weight_for_x;
         private int weight_for_y;
         private int weight_of_this_node;
         private int num_of_low_path;
-        private List<List<String>> paths_to_this_node;
+        private List<String> paths_to_this_node;
 
         public node(int weight_for_x, int weight_for_y) {
             this.weight_for_x = weight_for_x;
@@ -49,7 +48,7 @@ public class planeProblem {
             this.weight_of_this_node = weight_of_this_node;
         }
 
-        public List<List<String>> getPaths_to_this_node() {
+        public List<String> get_list_of_paths() {
             return this.paths_to_this_node;
         }
 
@@ -105,7 +104,7 @@ public class planeProblem {
                     greed[rows][cols].setNum_of_low_path(greed[rows][cols - 1].getNum_of_low_path());
                 } else if (from_right > from_up) { //takes the number of path from the downward node
                     greed[rows][cols].setNum_of_low_path(greed[rows - 1][cols].getNum_of_low_path());
-                } else { //noth path to this node are equals (if looking the weights) so we take the number of paths from both
+                } else { //both path to this node are equals (if looking the weights) so we take the number of paths from both
                     greed[rows][cols].setNum_of_low_path(greed[rows - 1][cols].getNum_of_low_path() + greed[rows][cols - 1].getWeight_of_this_node());   //directions and adds them - because we can get to this node from the right node and from the node underneath this node
 
                 }
@@ -155,48 +154,38 @@ public class planeProblem {
     }
 
     /*
-    O(rows+cols) * number of best paths
+    O(rows+cols) * number of best paths,  returns List<String> - list of strings, each string is a path
     in case of allot of paths - the recursion can not work !! (stack overflow)
     so we can put an supremum on the number of recursion split ! so it doest explode
     in the end of this function, allPaths list will hold all the paths
      */
-    public static void print_all_paths(List<String> path, int upIndex, int rightIndex) { //the best paths
-
-        if (upIndex > 0 && rightIndex > 0) { //didnt get to the left border of the greed or to the down border
+    public static void print_all_paths_rec(int upIndex, int rightIndex, String path){
+        if (upIndex>0 && rightIndex>0){
             int from_right = greed[upIndex][rightIndex - 1].getWeight_for_x() + greed[upIndex][rightIndex - 1].getWeight_of_this_node();
             int from_up = greed[upIndex - 1][rightIndex].getWeight_for_y() + greed[upIndex - 1][rightIndex].getWeight_of_this_node();
-            if (from_right < from_up) {//means the low path go from the node that is on the left from the main node(we need to go right)
-                path.add(0, "R");
-                print_all_paths(path, upIndex, rightIndex - 1);
-            } else if (from_right > from_up){ //they could be equals as well, so i choose to go down in this case
-                path.add(0, "U");
-                print_all_paths(path, upIndex - 1, rightIndex);
+
+            if (from_right<from_up){
+                print_all_paths_rec(upIndex, rightIndex-1, "R"+path);
             }
-            else{ //from_right == from_up
-                List<String> path1 = new ArrayList<>();
-                Collections.copy(path, path1);
-                path1.add(0, "U");
-                print_all_paths(path1, upIndex - 1, rightIndex);
-
-
-                List<String> path2 = new ArrayList<>();
-                Collections.copy(path, path2);
-                path2.add(0, "R");
-                print_all_paths(path2, upIndex, rightIndex - 1);
+            else if(from_right>from_up){
+                print_all_paths_rec(upIndex-1, rightIndex, "U"+path);
+            }
+            else { //from_right==from_up, there is a split
+                print_all_paths_rec(upIndex, rightIndex-1, "R"+path);
+                print_all_paths_rec(upIndex-1, rightIndex, "U"+path);
             }
         }
-        if (upIndex > 0 && rightIndex == 0) { //rightIndex ==0 means that we get to the left border of the greed
-            path.add(0, "U");
-            print_all_paths(path, upIndex - 1, rightIndex);
+        if (rightIndex>0 && upIndex==0){ // upIndex ==0 we get to the downward boarder, need to go all the way left
+            print_all_paths_rec(upIndex, rightIndex-1, "R"+path);
         }
-        if (rightIndex > 0 && upIndex==0) { // upIndex ==0 means that we get to the button of the greed
-            path.add(0, "R");
-            print_all_paths(path, upIndex, rightIndex - 1);
+        if (upIndex>0 && rightIndex==0){ // we get to the left boarder, need to go all the way down
+            print_all_paths_rec(upIndex-1, rightIndex, "U"+path);
         }
-        if (rightIndex == 0 && upIndex == 0) {
-            allPaths.add(path); // new best list - add it to the main list
+        if (upIndex==0 && rightIndex==0){
+            allPaths.add(path);
         }
     }
+
 
     /*
     this function will return the index of the main list that holds the list with the least turns.
@@ -206,7 +195,7 @@ public class planeProblem {
      */
     public static int min_turns_in_path() {
         int num_of_paths = allPaths.size();
-        int index_of_winner_list = 0;
+        int index_of_winner_String = 0;
         int min_number_of_turns = Integer.MAX_VALUE;
 
         if (num_of_paths == 1) {
@@ -215,18 +204,18 @@ public class planeProblem {
 
         for (int i = 0; i < num_of_paths; i++) {
             int counter_of_turns = 0;
-            List<String> temp = allPaths.get(i);
-            for (int len = 0; len < temp.size() - 1; len++) {
-                if (!temp.get(i).equals(temp.get(i + 1))) { //can add here && counter_of_turns lower then the min_number_turns because if its bigger there is no need to continue, no way it will be the winner
+            String temp = allPaths.get(i);
+            for (int len = 0; len < temp.length() - 1; len++) {
+                if (temp.charAt(len) != temp.charAt(len + 1)) { //can add here && counter_of_turns lower then the min_number_turns because if its bigger there is no need to continue, no way it will be the winner
                     counter_of_turns++;
                 }
             }
             if (counter_of_turns < min_number_of_turns) {
                 min_number_of_turns = counter_of_turns;
-                index_of_winner_list = i;
+                index_of_winner_String = i;
             }
         }
-        return index_of_winner_list;
+        return index_of_winner_String;
     }
 
     /*
@@ -260,19 +249,6 @@ public class planeProblem {
             }
         }
         return greed[destI][destJ].getWeight_of_this_node();
-//        for (int rows = nodeSRC.getWeight_for_y() + 1; rows <= nodeDEST.getWeight_for_y(); rows++) {
-//            for (int cols = nodeSRC.getWeight_for_x() + 1; cols <= nodeDEST.getWeight_for_x(); cols++) {
-//                int from_right = greed[rows][cols - 1].getWeight_for_x() + greed[rows][cols - 1].getWeight_of_this_node();
-//                int from_up = greed[rows - 1][cols].getWeight_for_y() + greed[rows - 1][cols].getWeight_of_this_node();
-//
-//                if (from_right < from_up) {
-//                    weight = weight + from_right;
-//                } else {
-//                    weight = weight + from_up;
-//                }
-//            }
-//        }
-//        return weight;
     }
 
     public static boolean is_node_in_path(int iSRC, int jSRC){
@@ -291,14 +267,14 @@ public class planeProblem {
         List<node> allNodes = new ArrayList<>();
         allNodes.add(greed[0][0]); //first node
         for (int i = 0; i < allPaths.size(); i++) {
-            List<String> temp = allPaths.get(i);
+            String temp = allPaths.get(i);
             int upIndex = 0;
             int rightIndex = 0;
-            for (int j = 0; j < temp.size(); j++) {
-                if (temp.get(j).equals("R")) {
+            for (int j = 0; j < temp.length(); j++) {
+                if (temp.charAt(j) == 'R') {
                     rightIndex++;
                 }
-                if (temp.get(j).equals("U")) {
+                if (temp.charAt(j) == 'U') {
                     upIndex++;
                 }
                 allNodes.add(greed[upIndex][rightIndex]);
@@ -319,48 +295,41 @@ public class planeProblem {
     and adds them "U" or "R" respectively.
      */
     public static void print_all_paths_iterative() {
-        for (int rows = 1; rows < up; rows++) {//fill in the first col
-            greed[rows][0].setWeight_of_this_node(greed[rows - 1][0].getWeight_for_y() + greed[rows - 1][0].getWeight_of_this_node());
-            greed[rows][0].getPaths_to_this_node().add(0, new ArrayList<>());
-            greed[rows][0].getPaths_to_this_node().get(0).add("U");
-        }
+        //greed is already filled
 
-        for (int cols = 1; cols < right; cols++) { //fill in the first row
-            greed[0][cols].setWeight_of_this_node(greed[0][cols - 1].getWeight_for_x() + greed[0][cols - 1].getWeight_of_this_node());
-            greed[0][cols].getPaths_to_this_node().add(0, new ArrayList<>());
-            greed[0][cols].getPaths_to_this_node().get(0).add("R");
+        for (int i=0; i<up; i++){
+            greed[i][0].get_list_of_paths().add("");
         }
-
+        for (int i=0; i<right; i++){
+            greed[0][i].get_list_of_paths().add("");
+        }
+        //initiate?
         for (int rows = 1; rows < up; rows++) {
             for (int cols = 1; cols < right; cols++) {
                 int from_right = greed[rows][cols - 1].getWeight_for_x() + greed[rows][cols - 1].getWeight_of_this_node();
                 int from_up = greed[rows - 1][cols].getWeight_for_y() + greed[rows - 1][cols].getWeight_of_this_node();
-                if (from_right < from_up) {
-                    node temp = greed[rows][cols - 1];
-                    for (int i = 0; i < temp.getNum_of_low_path(); i++) {
-                        greed[rows][cols].getPaths_to_this_node().add(i, temp.getPaths_to_this_node().get(i));
-                        greed[rows][cols].getPaths_to_this_node().get(i).add("R");
-                    }
-                }
-                if (from_right > from_up) {
-                    node temp = greed[rows - 1][cols];
-                    for (int i = 0; i < temp.getNum_of_low_path(); i++) {
-                        greed[rows][cols].getPaths_to_this_node().add(i, temp.getPaths_to_this_node().get(i));
-                        greed[rows][cols].getPaths_to_this_node().get(i).add("U");
-                    }
 
-                } else {
-                    node temp_right = greed[rows][cols - 1];
-                    node temp_up = greed[rows - 1][cols];
-                    for (int i = 0; i < temp_right.getPaths_to_this_node().size(); i++) {
-                        greed[rows][cols].getPaths_to_this_node().add(i, temp_right.getPaths_to_this_node().get(i));
-                        greed[rows][cols].getPaths_to_this_node().get(i).add("R");
-                    }
-                    for (int j = 0; j < temp_up.getPaths_to_this_node().size(); j++) {
-                        greed[rows][cols].getPaths_to_this_node().add(j, temp_up.getPaths_to_this_node().get(j));
-                        greed[rows][cols].getPaths_to_this_node().get(j).add("U");
+                if (from_right<from_up){
+                    //for each list (path) in the node that located on the left side of the main node we add "R" and adds the lists ti the main node
+                    for (int i=0; i<greed[rows][cols - 1].get_list_of_paths().size(); i++){
+                        greed[rows][cols].get_list_of_paths().add(greed[rows][cols - 1].get_list_of_paths().get(i)+"R");
                     }
                 }
+                else if(from_right>from_up){
+                    //for each list (path) in the node that located downward the main node we add "R" and adds the lists ti the main node
+                    for (int i=0; i<greed[rows-1][cols].get_list_of_paths().size(); i++){
+                        greed[rows][cols].get_list_of_paths().add(greed[rows-1][cols].get_list_of_paths().get(i)+"U");
+                    }
+                }
+                else{ // we can get from the left node and from the node beneath
+                    for (int i=0; i<greed[rows-1][cols].get_list_of_paths().size(); i++){
+                        greed[rows][cols].get_list_of_paths().add(greed[rows-1][cols].get_list_of_paths().get(i)+"U");
+                    }
+                    for (int i=0; i<greed[rows][cols - 1].get_list_of_paths().size(); i++){
+                        greed[rows][cols].get_list_of_paths().add(greed[rows][cols - 1].get_list_of_paths().get(i)+"R");
+                    }
+                }
+
             }
         }
     }
@@ -397,23 +366,28 @@ public class planeProblem {
 
         planeProblem aa = new planeProblem(greed);
         update_the_path_weights(); //build the greed with weights
-        numbers_of_low_paths();
-//        System.out.println(greed[m-1][n-1].getNum_of_low_path());
-        //System.out.println(greed[m-1][n-1].getWeight_of_this_node());
+        numbers_of_low_paths(); // build each node with its paths to him
+//        System.out.println("number of best paths is: " + greed[m-1][n-1].getNum_of_low_path());
+//        System.out.println("the weight(price) of the best path: "+ greed[m-1][n-1].getWeight_of_this_node());
 //        List<String> as = print_one_path();
-//        print_list(as);
-//        as.clear();
-        //print_all_paths_iterative();
-        List<String> as = new ArrayList<>();
-        print_all_paths(as, m-1, n-1);
-        System.out.println(allPaths.size());
-        for (int i=0; i<5; i++){
-            print_list(allPaths.get(i));
+//        System.out.println("This is one best path: ");
+//        print_list(as); //print one best path
+//
+//        print_all_paths_rec(m-1, n-1, "");  //build allPaths with all best paths there is
+//        System.out.println("number of all best paths: " + allPaths.size() + ", and the paths are: ");
+//        for (int i=0; i<allPaths.size(); i++){
+//            System.out.println(allPaths.get(i));
+//        }
+//        System.out.println();
+//        int min_turns_index = min_turns_in_path(); //returns the index of the list with the lowest turns
+//        System.out.println("Path with lowest turns is: " + allPaths.get(min_turns_index));
+
+        print_all_paths_iterative();
+        System.out.println(greed[m-1][n-1].get_list_of_paths().size());
+        for (int i=0; i<greed[m-1][n-1].get_list_of_paths().size(); i++){
+            System.out.println(greed[m-1][n-1].get_list_of_paths().get(i));
         }
-
-
     }
 
 }
-
 

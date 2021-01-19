@@ -57,25 +57,30 @@ public class max1Max2 {
         for (int i=0; i<arr.length; i++){
             numbersArr[i] = new number(arr[i]); //creates the array of nodes that will help us on calculating
         }
-        int max1Index = max1Max2(numbersArr, 0, arr.length); //will return the index in the array of the max1
+        int max1Index = max1Max2(numbersArr, 0, arr.length-1); //will return the index in the array of the max1
 
         int max2 = numbersArr[max1Index].getPotentialMax2().pop(); //pop one potential from max1 stack-the stack contains number, not indexes
 
         while(!numbersArr[max1Index].getPotentialMax2().empty()){
-            if (max2 < numbersArr[max1Index].getPotentialMax2().pop()){
+            if (max2 < numbersArr[max1Index].getPotentialMax2().peek()){
                 max2 = numbersArr[max1Index].getPotentialMax2().pop();
+            }
+            else{
+                numbersArr[max1Index].getPotentialMax2().pop();
             }
         }
 
         int max1 = numbersArr[max1Index].getKey();
 
-        System.out.println(max1);
-        System.out.println(max2);
+        System.out.println("max1 is: " + max1);
+        System.out.println("max2 is: " + max2);
     }
 
 
-
-
+    public static void main(String[] args) {
+        int[] arr = {6,7,8,2,4,5,54,3};
+        max1Max2(arr);
+    }
 
 
 

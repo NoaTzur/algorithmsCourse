@@ -1,6 +1,6 @@
 public class iterativePow {
 
-    public double iterativePow(double base, int exponent){ //O(logn) because of the exponent /= 2
+    public static double iterativePow(double base, int exponent){ //O(logn) because of the exponent /= 2
 
         double ans = 1;
 
@@ -15,7 +15,7 @@ public class iterativePow {
     }
 
     //O(logn) too
-    public void recursivePow(double base, int exponent, double ans){ // ans == 1 in the beggining !!!!!!
+    public static void recursivePow(double base, int exponent, double ans){ // ans == 1 in the beggining !!!!!!
 
         if(exponent == 0){
             System.out.println(ans); //arrive to the end
@@ -27,5 +27,9 @@ public class iterativePow {
         base = base*base;
         recursivePow(base, exponent, ans);
 
+    }
+
+    public static void main(String[] args) {
+        System.out.println(iterativePow(2,3));
     }
 }

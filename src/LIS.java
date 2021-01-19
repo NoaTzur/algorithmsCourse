@@ -1,4 +1,7 @@
 import java.util.Arrays;
+import java.util.LinkedList;
+
+import static java.lang.Integer.MIN_VALUE;
 
 public class LIS {
 
@@ -69,24 +72,26 @@ public class LIS {
         }
         return pointer+1;
     }
-
+    /*
+    O(n^2 - nlogn)
+     */
     public static int[] one_longest_LIS(int[] arr){
         int pointer =0;
 
         int[][] helper = new int[arr.length][arr.length];
         helper[0][0] = arr[0];
 
-        for (int i=1; i<arr.length; i++){
-            int next_index = index_binary_search(helper, pointer, arr[i]);
+        for (int i=1; i<arr.length; i++){ //O(n)
+            int next_index = index_binary_search(helper, pointer, arr[i]); // O(logn)
             helper[next_index][next_index] = arr[i];
-            copy_prev(helper, next_index, next_index-1);
+            copy_prev(helper, next_index, next_index-1); //O(n) - copy_prev
             if (next_index > pointer){
                 pointer++;
             }
         }
         System.out.println("length of LIS: "+ (pointer+1));
         int[] ans = new int[pointer+1];
-        for (int i=0; i<pointer+1; i++){
+        for (int i=0; i<pointer+1; i++){ //copy the last row of the helper matrix - this is the longest increasing subarray
             ans[i] = helper[pointer][i];
         }
         return ans;
@@ -109,5 +114,42 @@ public class LIS {
 
         //System.out.println(index_binary_search(aaa1, 2, 6));
         System.out.println(Arrays.toString(one_longest_LIS(arr3)));
+    }
+
+    //Questions from exams
+    /*
+    question 1 - longest increasing sub - linked-array.
+    the idea = take the array, find the min element.
+    take all the elements previous to this number and add to the end of the array (in the SAME order!!)
+
+    example - 9,10,8,0,1,4,3,7
+    after the re-arrangement 0,1,4,3,7
+     */
+
+    public static int[] LIS_linkedlist(LinkedList<Integer> linkedlist){
+
+        int[] helper = new int[linkedlist.size()];
+
+        int index_min = MIN_VALUE;
+        for (int i=0; i<linkedlist.size(); i++){ //O(n)
+            if (linkedlist.get(i) < index_min){
+                index_min = i;
+            }
+        }
+        /*
+        fill in helper array - O(n)
+         */
+        helper[index_min] = linkedlist.get(index_min); //the min element = now we need to take all the elements before him and place the min the end
+
+        for (int i = index_min+1; i<linkedlist.size(); i++){
+            helper[i] = linkedlist.get(i-index_min); // from the index of minimum and end - put them after the minimum
+                                                      //their indexes should be their original index minus index_min
+        }
+        for(int i=0; i<index_min; i++){ //now take all element before the minimum and put them in the end
+            helper[i+index_min+1] = linkedlist.get(i);
+        }
+
+        return one_longest_LIS(helper);
+
     }
 }

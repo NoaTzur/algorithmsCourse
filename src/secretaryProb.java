@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class secretaryProb {
 
     /*
@@ -16,4 +18,20 @@ public class secretaryProb {
     we will arrange the queue as sorted from the lower time to be treated patient to the hight time .
 
      */
+
+    public static int averageWaiting(int[] patients){
+        int sum=0;
+        int temp=0;
+        Arrays.sort(patients);
+        for (int i=0; i<patients.length; i++){
+            temp = temp + patients[i];
+            sum = sum + temp;
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {1,3,5,19};
+        System.out.println(averageWaiting(arr));
+    }
 }

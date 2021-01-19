@@ -132,6 +132,17 @@ public class LISbyLCS {
         }
     }
 
+    public static void printingGreeds(int[][] greed){
+
+        for (int rows=0; rows<greed.length; rows ++){
+            for (int cols=0; cols<greed[0].length; cols++){
+                System.out.print(greed[rows][cols] + "  ");
+            }
+            System.out.println();
+
+        }
+    }
+
 
     public static void main(String[] args) {
 //        String aa = "abba";
@@ -150,7 +161,7 @@ public class LISbyLCS {
         //int[] ans = one_LIS(greed, arr, arr2);
         //System.out.println(Arrays.toString(ans));
         //allCommonStrings(greed,arr,arr2,arr.length, arr.length, "");
-
+        printingGreeds(greed);
 
     }
 }

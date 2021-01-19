@@ -23,7 +23,7 @@ public class aliceANDbob {
      */
     public boolean strategy2(){
         int alice = flipTheCoin();
-        if(alice < 0){
+        if(alice < 1){
             return true;
         }
         return false;
