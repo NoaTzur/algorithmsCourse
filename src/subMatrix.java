@@ -1,7 +1,9 @@
 import java.util.Arrays;
 
 public class subMatrix {
-
+    /*
+    O(m*n)
+     */
     public static int subMat(int[][] greed) {
 
         int maxLength = 0;
@@ -62,10 +64,10 @@ public class subMatrix {
 
         int arr[][] = {{1,0,1,0},{1,1,1,1},{0,1,1,0},{1,1,0,0}};
 
-       // int ans = subMat(arr);
-        //System.out.println(ans);
-        //printingGreeds(mat);
-        subRectangle(mat);
+        int ans = subMat(a);
+        System.out.println(ans);
+        printingGreeds(a);
+        //subRectangle(mat);
     }
 
 

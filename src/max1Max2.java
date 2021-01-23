@@ -22,7 +22,11 @@ public class max1Max2 {
             return this.potentialMax2;
         }
     }
+    /*
+    O(n-1 + logn) = minimal!!!
+    recursive
 
+     */
 
     public static int max1Max2(number[] arr, int start, int end){
 
@@ -45,12 +49,14 @@ public class max1Max2 {
                       // it will tell us that the recursion split and arrived to subarray in length 1 (one node)
                       // so we will return start\end and it will enter to index1 / index2 params
                       // depend on who calls the function max1Max2 with params of start, middle when
-                      //middle == start. or middle\\end....
-                      //after this will happen it will get in to the code at lines 34-41 will be executed on the first pair
+                      //middle == start. or middle==end....
+                      //after this will happen it will get in to the code at lines 37-43 will be executed on the first pair
                       //then the next pair and so on, each pair will return to index1 and index2 the index of the bigger
                       // number from the pair, and will create new pair and so on
     }
-
+    //O(n-1 + logn) = minimal!!!
+    //length of the stack od max1 - logn
+    //number of comparisons in max1Max2(number[] arr, int start, int end) function is n-1 = n/2+n/4...+1
     public static void max1Max2(int[] arr){
         number[] numbersArr = new number[arr.length];
 
@@ -77,9 +83,81 @@ public class max1Max2 {
     }
 
 
+
+    public static int max1max2_dynamic(int[] arr){
+        //O ( 3*(n/2))
+        int comparesCounter = 0;
+        int max1;
+        int max2;
+
+        comparesCounter++;
+        if(arr[0] > arr[1]){
+            max1 = arr[0];
+            max2 = arr[1];
+        }
+        else{
+            max1 = arr[1];
+            max2 = arr[0];
+        }
+
+        for (int i=2; i < arr.length; i=i+2){ //step 2 in a time !!
+            comparesCounter++;
+            if (arr[i] > arr[i+1]){
+                comparesCounter++;
+                if (arr[i]>max1){
+                    comparesCounter++;
+                    max2 = Math.max(max1, arr[i+1]);
+                    max1=arr[i];
+                }
+                else { // arr[i] < max1
+                    comparesCounter++;
+                    if (arr[i] > max2){
+                        max2 = arr[i];
+                    }
+                }
+            }
+            else{ //arr[i]<arr[i+1]
+                comparesCounter++;
+                if (arr[i+1]>max1){
+                    comparesCounter++;
+                    max2 = Math.max(max1, arr[i]);
+                    max1=arr[i+1];
+                }
+                else { // arr[i+1] < max1
+                    comparesCounter++;
+                    if (arr[i+1] > max2){
+                        max2 = arr[i+1];
+                    }
+                }
+            }
+            //if the length of the array is odd , there is not enough couples.
+            //so check the last element in array
+            if (arr.length % 2 != 0){
+                comparesCounter++;
+                if (arr[arr.length-1] > max1){
+                    max2 = max1;
+                    max1 = arr[arr.length-1];
+                }
+                comparesCounter++;
+                if (arr[arr.length-1] > max2){
+                    max2 = arr[arr.length-1];
+                }
+            }
+
+        }
+        System.out.println(max1);
+        System.out.println(max2);
+        return comparesCounter;
+    }
+
+
+
     public static void main(String[] args) {
         int[] arr = {6,7,8,2,4,5,54,3};
-        max1Max2(arr);
+       // max1Max2(arr);
+        //int arr[] = {7,2,3,16,1,2,3,4,10,5};
+
+        max1max2_dynamic(arr);
     }
 
 

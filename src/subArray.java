@@ -1,5 +1,9 @@
 public class subArray {
 
+
+    /*
+    O(n)
+     */
     public static void subOnes(int[] arr){
 
         int[] helperArr = new int[arr.length];

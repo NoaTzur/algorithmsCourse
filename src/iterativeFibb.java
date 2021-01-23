@@ -1,8 +1,11 @@
 public class iterativeFibb {
 
 
-    //this function is rely on the algorithm for calculation a pow iteratively
 
+    /*
+    this function is rely on the algorithm for calculation a pow iteratively
+    calc the matrix power with the help of iterative pow algo - explanation is there
+     */
     public static long iterativeFibb(int indexNum){
 
         int temp = indexNum;

@@ -64,17 +64,19 @@ public class LCSbyLIS {
         }
         return middle;
     }
-
+    /*
+    O(n^2 + nlogn)
+     */
     public static int[] one_longest_LIS(List<Integer> list){
         int pointer =0;
 
         int[][] helper = new int[list.size()][list.size()];
         helper[0][0] = list.get(0);
 
-        for (int i=1; i<list.size(); i++){
-            int next_index = index_binary_search(helper, pointer, list.get(i));
+        for (int i=1; i<list.size(); i++){ //O(n)
+            int next_index = index_binary_search(helper, pointer, list.get(i)); //O(logn)
             helper[next_index][next_index] = list.get(i);
-            copy_prev(helper, next_index, next_index-1);
+            copy_prev(helper, next_index, next_index-1); //O(n)
             if (next_index > pointer){
                 pointer++;
             }
@@ -98,6 +100,7 @@ public class LCSbyLIS {
     /*
     LCS by LIS (4 steps)
 
+    O(m + m*n + (m*n)^2 +mnlogmn)
     O(m*n*log(m*n))
      */
     public static String LcsByLis(String s1, String s2) {
